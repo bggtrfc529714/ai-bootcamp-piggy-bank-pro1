@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Kids Budget App - Fun & Playful Colors */
+    --background: 36 100% 97%;  /* Light cream #FDF5E6 */
+    --foreground: 16 29% 29%;   /* Brown text #5D4037 */
+
+    --card: 0 0% 100%;
+    --card-foreground: 16 29% 29%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 16 29% 29%;
+
+    --primary: 14 100% 63%;     /* Coral #FF7043 */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 199 92% 62%;   /* Light blue #4FC3F7 */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 30 100% 94%;       /* Light peach */
+    --muted-foreground: 16 29% 50%;
+
+    --accent: 127 43% 57%;      /* Green #66BB6A */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 36 50% 90%;
+    --input: 36 50% 90%;
+    --ring: 14 100% 63%;
+
+    --radius: 1rem;
+
+    /* Custom colors for budget app */
+    --income: 127 43% 57%;      /* Green for money in */
+    --expense: 0 84.2% 60.2%;   /* Red for money out */
+    --goal: 199 92% 62%;        /* Blue for goals */
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(14 100% 63%), hsl(14 100% 73%));
+    --gradient-secondary: linear-gradient(135deg, hsl(199 92% 62%), hsl(199 92% 72%));
+    --gradient-accent: linear-gradient(135deg, hsl(127 43% 57%), hsl(127 43% 67%));
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(14 100% 63%), hsl(14 100% 73%));
+  }
+  
+  .gradient-secondary {
+    background: linear-gradient(135deg, hsl(199 92% 62%), hsl(199 92% 72%));
+  }
+  
+  .gradient-accent {
+    background: linear-gradient(135deg, hsl(127 43% 57%), hsl(127 43% 67%));
+  }
+
+  .animate-bounce-slow {
+    animation: bounce 2s infinite;
+  }
+
+  .animate-wiggle {
+    animation: wiggle 1s ease-in-out infinite;
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+}
