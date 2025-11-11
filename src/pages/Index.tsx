@@ -1,47 +1,34 @@
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { LogOut, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTransactions } from "@/hooks/useTransactions";
+import { useGoals } from "@/hooks/useGoals";
 import BalanceCard from "@/components/BalanceCard";
 import TransactionsTab from "@/components/TransactionsTab";
 import GoalsTab from "@/components/GoalsTab";
 import ChartsTab from "@/components/ChartsTab";
 
-export interface Transaction {
-  id: string;
-  date: string;
-  type: "Income" | "Expense";
-  amount: number;
-  category: string;
-  description: string;
-}
-
-export interface Goal {
-  id: string;
-  name: string;
-  targetAmount: number;
-  currentAmount: number;
-}
+// Re-export types for backward compatibility with components
+export type { Transaction } from "@/hooks/useTransactions";
+export type { Goal } from "@/hooks/useGoals";
 
 const Index = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    {
-      id: "1",
-      date: new Date().toISOString(),
-      type: "Income",
-      amount: 10,
-      category: "Allowance",
-      description: "Weekly allowance",
-    },
-  ]);
-
-  const [goals, setGoals] = useState<Goal[]>([
-    {
-      id: "1",
-      name: "New Bike",
-      targetAmount: 150,
-      currentAmount: 10,
-    },
-  ]);
+  const { signOut, user } = useAuth();
+  const {
+    transactions,
+    isLoading: transactionsLoading,
+    addTransaction,
+    deleteTransaction,
+  } = useTransactions();
+  const {
+    goals,
+    isLoading: goalsLoading,
+    addGoal,
+    deleteGoal,
+    updateGoalProgress,
+  } = useGoals();
 
   const calculateBalance = () => {
     return transactions.reduce((balance, transaction) => {
@@ -51,52 +38,49 @@ const Index = () => {
     }, 0);
   };
 
-  const addTransaction = (transaction: Omit<Transaction, "id">) => {
-    const newTransaction = {
-      ...transaction,
-      id: Date.now().toString(),
-    };
-    setTransactions([newTransaction, ...transactions]);
+  const handleSignOut = async () => {
+    await signOut();
   };
 
-  const deleteTransaction = (id: string) => {
-    setTransactions(transactions.filter((t) => t.id !== id));
-  };
-
-  const addGoal = (goal: Omit<Goal, "id" | "currentAmount">) => {
-    const newGoal = {
-      ...goal,
-      id: Date.now().toString(),
-      currentAmount: 0,
-    };
-    setGoals([...goals, newGoal]);
-  };
-
-  const deleteGoal = (id: string) => {
-    setGoals(goals.filter((g) => g.id !== id));
-  };
-
-  const updateGoalProgress = (id: string, amount: number) => {
-    setGoals(
-      goals.map((goal) =>
-        goal.id === id
-          ? { ...goal, currentAmount: Math.min(goal.currentAmount + amount, goal.targetAmount) }
-          : goal
-      )
+  // Show loading state while fetching data
+  if (transactionsLoading || goalsLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin mx-auto text-primary mb-4" />
+          <p className="text-lg text-muted-foreground">Loading your piggy bank...</p>
+        </div>
+      </div>
     );
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
       <div className="container max-w-6xl mx-auto p-4 md:p-8">
-        {/* Header */}
+        {/* Header with Logout */}
         <div className="text-center mb-8 animate-in fade-in slide-in-from-top duration-700">
+          <div className="flex justify-end mb-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSignOut}
+              className="gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </Button>
+          </div>
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-2 flex items-center justify-center gap-2">
             <span className="text-5xl animate-bounce-slow">🐷</span>
             Piggy Bank Pro
             <span className="text-5xl animate-bounce-slow">🐷</span>
           </h1>
           <p className="text-lg text-muted-foreground">Track your money like a pro!</p>
+          {user?.email && (
+            <p className="text-sm text-muted-foreground mt-2">
+              Logged in as: {user.email}
+            </p>
+          )}
         </div>
 
         {/* Balance Card */}
